@@ -1,0 +1,17 @@
+.idea/
+.vscode/
+
+__pycache__/
+
+*.log
+*.pot
+*.py[cod]
+
+
+app/migrations/versions/**
+!app/migrations/versions/.gitkeep
+
+.venv/
+
+test.py
+.env
