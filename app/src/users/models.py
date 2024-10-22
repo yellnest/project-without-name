@@ -1,7 +1,8 @@
-import datetime
-
 import enum
-from sqlalchemy import Column, Integer, String, DateTime, Enum, Boolean
+from datetime import datetime
+
+from sqlalchemy import Column, Integer, String, Enum, Boolean, func
+from sqlalchemy.orm import Mapped, mapped_column
 
 from app.database import Base
 
@@ -23,6 +24,6 @@ class Users(Base):
     email = Column(String, nullable=False, unique=True)
     eng_lvl = Column(Enum(EnglishLevel), nullable=False)
     avatar = Column(String)
-    join_date = Column(DateTime, default=datetime.datetime.utcnow)
     is_admin = Column(Boolean, default=False, nullable=False)
     is_superuser = Column(Boolean, default=False, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(server_default=func.now())

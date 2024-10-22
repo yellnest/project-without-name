@@ -13,7 +13,7 @@ class EnglishAccentChoice(enum.Enum):
 
 SongArtist = Table('song_artist', Base.metadata,
                    Column('id', Integer, primary_key=True),
-                   Column('song_id', Integer, ForeignKey('song.id')),
+                   Column('song_id', Integer, ForeignKey('songs.id')),
                    Column('artist_id', Integer, ForeignKey('artists.id'))
                    )
 

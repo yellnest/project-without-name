@@ -1,4 +1,5 @@
 import sys
+import alembic_postgresql_enum
 from logging.config import fileConfig
 from os.path import dirname, abspath
 
