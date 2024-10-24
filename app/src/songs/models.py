@@ -1,6 +1,6 @@
 import enum
 
-from sqlalchemy import Column, Table, Integer, String, Float, Boolean, ForeignKey, Computed, Enum
+from sqlalchemy import Column, Table, Integer, String, Float, Boolean, ForeignKey, Computed, Enum, UniqueConstraint
 from sqlalchemy.orm import relationship
 
 from app.database import Base
@@ -14,7 +14,8 @@ class EnglishAccentChoice(enum.Enum):
 SongArtist = Table('song_artist', Base.metadata,
                    Column('id', Integer, primary_key=True),
                    Column('song_id', Integer, ForeignKey('songs.id')),
-                   Column('artist_id', Integer, ForeignKey('artists.id'))
+                   Column('artist_id', Integer, ForeignKey('artists.id')),
+                   UniqueConstraint('song_id', 'artist_id', name='uix_1')
                    )
 
 

@@ -1,10 +1,8 @@
 import enum
-from datetime import datetime
 
-from sqlalchemy import Column, Integer, String, Enum, Boolean, func
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import Column, Integer, String, Enum, Boolean
 
-from app.database import Base
+from app.database import Base, CreatedAndUpdatedFields
 
 
 class EnglishLevel(enum.Enum):
@@ -16,14 +14,13 @@ class EnglishLevel(enum.Enum):
     C1 = 'C1'
 
 
-class Users(Base):
+class Users(Base, CreatedAndUpdatedFields):
     __tablename__ = 'users'
-
     id = Column(Integer, primary_key=True)
     user_name = Column(String(50), nullable=False)
+    user_password = Column(String(50), nullable=False)
     email = Column(String, nullable=False, unique=True)
     eng_lvl = Column(Enum(EnglishLevel), nullable=False)
     avatar = Column(String)
     is_admin = Column(Boolean, default=False, nullable=False)
     is_superuser = Column(Boolean, default=False, nullable=False)
-    created_at: Mapped[datetime] = mapped_column(server_default=func.now())
