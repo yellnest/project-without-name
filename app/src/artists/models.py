@@ -9,9 +9,9 @@ class Artists(Base):
     __tablename__ = 'artists'
 
     id = Column(Integer, primary_key=True)
-    nick = Column(String(50), nullable=False, unique=True)
+    nick = Column(String(50), nullable=False)
     slug = Column(String(50), unique=True)
     avatar = Column(String)
-    song_id = relationship('songs', secondary=SongArtist, backref='artists')
+    song_id = relationship('Songs', secondary=SongArtist, back_populates='artist_id')
 
 

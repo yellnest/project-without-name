@@ -1,8 +1,10 @@
 import enum
 
 from sqlalchemy import Column, Integer, String, Enum, Boolean
+from sqlalchemy.orm import relationship
 
 from app.database import Base, CreatedAndUpdatedFields
+from app.src.songs.models import SongComments, SongLikes
 
 
 class EnglishLevel(enum.Enum):
@@ -24,3 +26,5 @@ class Users(Base, CreatedAndUpdatedFields):
     avatar = Column(String)
     is_admin = Column(Boolean, default=False, nullable=False)
     is_superuser = Column(Boolean, default=False, nullable=False)
+    song_comment_id = relationship('Songs', secondary=SongComments, back_populates='comment')
+    song_like_id = relationship('Songs', secondary=SongLikes, back_populates='likes')

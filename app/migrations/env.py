@@ -14,10 +14,8 @@ sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
 from app.config import settings
 from app.database import Base
 from app.src.genre.models import Genre
-from app.src.likes.models import Likes
 from app.src.users.models import Users
 from app.src.songs.models import Songs
-from app.src.comments.models import Comments
 from app.src.artists.models import Artists
 
 # this is the Alembic Config object, which provides

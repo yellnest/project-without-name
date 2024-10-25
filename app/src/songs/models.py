@@ -1,6 +1,7 @@
 import enum
 
-from sqlalchemy import Column, Table, Integer, String, Float, Boolean, ForeignKey, Computed, Enum, UniqueConstraint
+from sqlalchemy import Column, Table, Integer, String, Float, Boolean, ForeignKey, Computed, Enum, UniqueConstraint, \
+    DateTime, func
 from sqlalchemy.orm import relationship
 
 from app.database import Base
@@ -13,9 +14,25 @@ class EnglishAccentChoice(enum.Enum):
 
 SongArtist = Table('song_artist', Base.metadata,
                    Column('id', Integer, primary_key=True),
-                   Column('song_id', Integer, ForeignKey('songs.id')),
-                   Column('artist_id', Integer, ForeignKey('artists.id')),
+                   Column('song_id', Integer, ForeignKey('songs.id', ondelete='CASCADE')),
+                   Column('artist_id', Integer, ForeignKey('artists.id', ondelete='SET NULL')),
                    UniqueConstraint('song_id', 'artist_id', name='uix_1')
+                   )
+
+SongComments = Table('song_comments', Base.metadata,
+                     Column('id', Integer, primary_key=True),
+                     Column('song_id', Integer, ForeignKey('songs.id', ondelete='CASCADE')),
+                     Column('user_id', Integer, ForeignKey('users.id', ondelete='CASCADE')),
+                     Column('comm_text', String, nullable=False),
+                     Column('created_at', DateTime, server_default=func.now()),
+                     Column('updated_at', DateTime, server_default=func.now(), onupdate=func.now()),
+                     )
+
+SongLikes = Table('song_likes', Base.metadata,
+                   Column('id', Integer, primary_key=True),
+                   Column('song_id', Integer, ForeignKey('songs.id', ondelete='CASCADE')),
+                   Column('user_id', Integer, ForeignKey('users.id', ondelete='CASCADE')),
+                   UniqueConstraint('song_id', 'user_id', name='uix_2')
                    )
 
 
@@ -33,6 +50,7 @@ class Songs(Base):
     description = Column(String, nullable=False)
     published = Column(Boolean, default=False)
     accent = Column(Enum(EnglishAccentChoice))
-    artist_id = relationship('artists', secondary=SongArtist, backref='songs')
-    # artist_id = Column(Integer, ForeignKey('artists.id'), nullable=False)
-    genre_id = Column(Integer, ForeignKey('genre.id'), nullable=False)
+    artist_id = relationship('Artists', secondary=SongArtist, back_populates='song_id')
+    comment = relationship('Users', secondary=SongComments, back_populates='song_comment_id')
+    likes = relationship('Users', secondary=SongLikes, back_populates='song_like_id')
+    genre_id = Column(Integer, ForeignKey('genre.id', ondelete='SET NULL'), nullable=False)
