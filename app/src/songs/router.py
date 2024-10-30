@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends
 
+from app.base.servieces import handle_errors
 from app.exeptions import NoSuchItem, SuccessRequest
 from app.src.songs.dao import SongsDao
 from app.src.songs.schemas import SongSchema, CreateSongSchema
@@ -24,12 +25,13 @@ async def get_song_by_id(song_id: int) -> SongSchema:
 
 
 @router.post("/create-song")
+@handle_errors
 async def create_song(user_data: CreateSongSchema):
     await SongsDao.add_item(title=user_data.title, slug=user_data.slug, slang=user_data.slang,
                             ambiguity=user_data.ambiguity, flow=user_data.flow, words_slurring=user_data.words_slurring,
                             description=user_data.description, published=user_data.published, accent=user_data.accent,
                             genre_id=user_data.genre_id)
-    return SuccessRequest
+
 
 @router.delete("/{song_id}", dependencies=[Depends(get_song_by_id)])
 async def delete_song_by_id(song_id: int):

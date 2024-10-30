@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends
 
+from app.base.servieces import handle_errors
 from app.exeptions import NoSuchItem, SuccessRequest
 from app.src.artists.dao import ArtistDao
 from app.src.artists.schemas import ArtistSchema, CreateArtistSchema
@@ -24,9 +25,10 @@ async def get_artist_by_id(artist_id: int) -> ArtistSchema:
 
 
 @router.post("/create-artist")
+@handle_errors
 async def create_artist(artist: CreateArtistSchema):
     await ArtistDao.add_item(nick=artist.nick, slug=artist.slug, avatar=artist.avatar)
-    return SuccessRequest
+
 
 @router.delete("/{artist_id}", dependencies=[Depends(get_artist_by_id)])
 async def delete_artist(artist_id: int):
