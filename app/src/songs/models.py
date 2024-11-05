@@ -1,39 +1,16 @@
 import enum
 
-from sqlalchemy import Column, Table, Integer, String, Float, Boolean, ForeignKey, Computed, Enum, UniqueConstraint, \
-    DateTime, func
+from sqlalchemy import Column, Integer, String, Float, Boolean, ForeignKey, Computed, Enum
 from sqlalchemy.orm import relationship
 
 from app.database import Base
+from app.src.relationship_tables.relation_models import SongArtist, SongComments, SongLikes
 
 
 class EnglishAccentChoice(enum.Enum):
     american = 'american'
     british = 'british'
 
-
-SongArtist = Table('song_artist', Base.metadata,
-                   Column('id', Integer, primary_key=True),
-                   Column('song_id', Integer, ForeignKey('songs.id', ondelete='CASCADE')),
-                   Column('artist_id', Integer, ForeignKey('artists.id', ondelete='SET NULL')),
-                   UniqueConstraint('song_id', 'artist_id', name='uix_1')
-                   )
-
-SongComments = Table('song_comments', Base.metadata,
-                     Column('id', Integer, primary_key=True),
-                     Column('song_id', Integer, ForeignKey('songs.id', ondelete='CASCADE')),
-                     Column('user_id', Integer, ForeignKey('users.id', ondelete='CASCADE')),
-                     Column('comm_text', String, nullable=False),
-                     Column('created_at', DateTime, server_default=func.now()),
-                     Column('updated_at', DateTime, server_default=func.now(), onupdate=func.now()),
-                     )
-
-SongLikes = Table('song_likes', Base.metadata,
-                   Column('id', Integer, primary_key=True),
-                   Column('song_id', Integer, ForeignKey('songs.id', ondelete='CASCADE')),
-                   Column('user_id', Integer, ForeignKey('users.id', ondelete='CASCADE')),
-                   UniqueConstraint('song_id', 'user_id', name='uix_2')
-                   )
 
 
 class Songs(Base):

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 
 from app.base.servieces import handle_errors
-from app.exeptions import NoSuchItem, SuccessRequest
+from app.exceptions import NoSuchItem, SuccessRequest
 from app.src.artists.dao import ArtistDao
 from app.src.artists.schemas import ArtistSchema, CreateArtistSchema
 

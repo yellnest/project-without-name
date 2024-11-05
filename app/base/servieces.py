@@ -4,7 +4,7 @@ from datetime import datetime, UTC
 
 from asyncpg import UniqueViolationError, ForeignKeyViolationError, InvalidTextRepresentationError
 from sqlalchemy.exc import IntegrityError, DBAPIError
-from app.exeptions import SuccessRequest, ItemAlreadyExists, IncorrectForeignKey, InvalidText
+from app.exceptions import SuccessRequest, ItemAlreadyExists, IncorrectForeignKey, InvalidEnum
 
 
 def naive_utcnow():
@@ -37,7 +37,7 @@ def handle_errors(func):
         except DBAPIError as e:
             current_error = e.orig.__dict__.get('sqlstate')
             if current_error == InvalidTextRepresentationError.sqlstate:
-                raise InvalidText
+                raise InvalidEnum
             else:
                 raise e
     return wrapper

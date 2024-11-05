@@ -4,7 +4,7 @@ from sqlalchemy import Column, Integer, String, Enum, Boolean
 from sqlalchemy.orm import relationship
 
 from app.database import Base, CreatedAndUpdatedFields
-from app.src.songs.models import SongComments, SongLikes
+from app.src.relationship_tables.relation_models import SongComments, SongLikes
 
 
 class EnglishLevel(enum.Enum):

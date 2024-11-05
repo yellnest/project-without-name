@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 
 from app.base.servieces import handle_errors
-from app.exeptions import NoSuchItem, SuccessRequest
+from app.exceptions import NoSuchItem, SuccessRequest
 from app.src.genre.dao import GenreDao
 from app.src.genre.schemas import GenreSchema, CreateGenreSchema
 

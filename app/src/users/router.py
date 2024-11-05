@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 
 from app.base.servieces import handle_errors
-from app.exeptions import SuccessRequest, NoSuchItem
+from app.exceptions import SuccessRequest, NoSuchItem
 from app.src.users.dao import UserDAO
 from app.src.users.schemas import UserSchema, UserRegistrationSchema
 

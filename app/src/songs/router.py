@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 
 from app.base.servieces import handle_errors
-from app.exeptions import NoSuchItem, SuccessRequest
+from app.exceptions import NoSuchItem, SuccessRequest
 from app.src.songs.dao import SongsDao
 from app.src.songs.schemas import SongSchema, CreateSongSchema
 
@@ -12,8 +12,9 @@ router = APIRouter(
 
 
 @router.get("/all")
-async def get_all_songs() -> list[SongSchema]:
-    return await SongsDao.get_all()
+async def get_all_songs():
+    return await SongsDao.chow_all_songs()
+    # return await SongsDao.get_all()
 
 
 @router.get("/{song_id}")
