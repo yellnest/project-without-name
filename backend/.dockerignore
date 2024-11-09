@@ -1,0 +1,11 @@
+venv
+.gitignore
+.dockerignore
+.dockerenv
+Dockerfile
+Dockerfile.prod
+__pycache__
+.idea
+.git
+backend/app/migrations/versions/**
+!backend/app/migrations/versions/.gitkeep

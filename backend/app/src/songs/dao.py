@@ -16,7 +16,7 @@ class SongsDao(BaseDao):
 
 
     @classmethod
-    async def chow_all_songs(cls):
+    async def show_all_songs(cls):
         async with async_session_marker() as session:
 
             # Define the subquery
@@ -63,3 +63,4 @@ class SongsDao(BaseDao):
             )
             result = await session.execute(all_song_foreign_keys)
             return result.mappings().all()
+

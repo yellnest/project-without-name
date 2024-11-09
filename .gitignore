@@ -8,10 +8,7 @@ __pycache__/
 *.py[cod]
 
 
-app/migrations/versions/**
-!app/migrations/versions/.gitkeep
-
-.venv/
+backend/app/migrations/versions/**
 
 test.py
 .env
