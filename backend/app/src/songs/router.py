@@ -12,14 +12,14 @@ router = APIRouter(
 
 
 @router.get("/all")
-async def get_all_songs():
-    return await SongsDao.chow_all_songs()
+async def get_all_songs() -> list[SongSchema]:
+    return await SongsDao.show_all_songs()
     # return await SongsDao.get_all()
 
 
 @router.get("/{song_id}")
 async def get_song_by_id(song_id: int) -> SongSchema:
-    song = await SongsDao.get_by_id(song_id)
+    song = await SongsDao.show_song_by_id(song_id)
     if song is None:
         raise NoSuchItem
     return song
