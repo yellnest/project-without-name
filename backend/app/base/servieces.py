@@ -12,15 +12,18 @@ def naive_utcnow():
     """
     return datetime.now(UTC).replace(tzinfo=None).strftime("%Y-%m-%d %H:%M:%S")
 
+
 def generate_slug(title):
     """Return slug based on title, work only with latin letters
     """
     slug = re.sub(r'\W+', '-', title.lower())
     return slug
 
+
 def handle_errors(func):
     """ Takes a func and checking for errors
     """
+
     @functools.wraps(func)
     async def wrapper(**kwargs):
         try:
@@ -29,15 +32,19 @@ def handle_errors(func):
         except IntegrityError as e:
             current_error = e.orig.__dict__.get('sqlstate')
             if current_error == UniqueViolationError.sqlstate:
+                """Если указано unique together то вызывается эта ошибка"""
                 raise ItemAlreadyExists
             elif current_error == ForeignKeyViolationError.sqlstate:
+                """Если указан несуществующий foreignKey"""
                 raise IncorrectForeignKey
             else:
                 raise e
         except DBAPIError as e:
             current_error = e.orig.__dict__.get('sqlstate')
             if current_error == InvalidTextRepresentationError.sqlstate:
+                """Если указано несуществующие поле в enum"""
                 raise InvalidEnum
             else:
                 raise e
+
     return wrapper
