@@ -19,3 +19,9 @@ class CommentDao(BaseDao):
             result = await session.execute(comments)
             # print(result.mappings().first())
             return result.mappings().all()
+
+
+    @classmethod
+    async def create_comment_by_song_id(cls, song_id: int, comment: str):
+        async with async_session_marker() as session:
+            pass

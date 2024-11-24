@@ -27,7 +27,7 @@ class BaseDao:
         async with async_session_marker() as session:
             query = select(cls.model).filter_by(**filter_by)
             result = await session.execute(query)
-            return result.exists().scalar_one_or_none()
+            return result.scalar_one_or_none()
 
     """POST"""
     @classmethod

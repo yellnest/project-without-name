@@ -32,3 +32,12 @@ class IncorrectForeignKey(BaseProjectException):
 class InvalidEnum(BaseProjectException):
     status_code = status.HTTP_400_BAD_REQUEST
     detail = "Invalid enum choices"
+
+
+class UserAlreadyExists(BaseProjectException):
+    status_code = status.HTTP_409_CONFLICT
+    detail = "User with email already exists"
+
+class PasswordsDoNotMatch(BaseProjectException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    detail = "Passwords do not match"
