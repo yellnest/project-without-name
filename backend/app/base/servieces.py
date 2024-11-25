@@ -30,9 +30,11 @@ def handle_errors(func):
             await func(**kwargs)
             raise SuccessRequest
         except IntegrityError as e:
+            # match = re.search(r"Key \(email\)=\((.*?)\) already exists", str(e.orig))
+            # conflicting_slug = match.group(1)
             current_error = e.orig.__dict__.get('sqlstate')
             if current_error == UniqueViolationError.sqlstate:
-                """Если указано unique together то вызывается эта ошибка"""
+                """Если указано unique, и происходит попытка добавить существующие, то вызывается эта ошибка"""
                 raise ItemAlreadyExists
             elif current_error == ForeignKeyViolationError.sqlstate:
                 """Если указан несуществующий foreignKey"""

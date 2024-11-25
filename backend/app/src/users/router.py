@@ -3,8 +3,7 @@ from fastapi import APIRouter, Depends
 from app.base.servieces import handle_errors
 from app.exceptions import SuccessRequest, NoSuchItem
 from app.src.users.dao import UserDAO
-from app.src.users.dependencies import email_already_exist
-from app.src.users.schemas import UserSchema, UserRegistrationSchema
+from app.src.users.schemas import UserSchema, UserRegistrationSchema, UserUpdateSchema
 
 router = APIRouter(
     prefix="/auth",
@@ -13,8 +12,14 @@ router = APIRouter(
 
 
 @router.post("/register")
+@handle_errors
 async def register_user(user: UserRegistrationSchema):
-    await email_already_exist(user.email)
+    await UserDAO.add_item(user_name=user.user_name, user_password=user.user_password, email=user.email)
+    raise SuccessRequest
+
+
+    # await email_already_exist(user.email)
+    # print(user.email)
     # if user.user_password == user.repeat_password:
     #     print(user.user_password)
     # else:
@@ -40,8 +45,7 @@ async def get_user_by_id(user_id: int) -> UserSchema:
 @router.post("/create-user")
 @handle_errors
 async def create_user(user_data: UserRegistrationSchema):
-    await UserDAO.add_item(user_name=user_data.user_name, user_password=user_data.user_password,
-                           email=user_data.email)
+    await UserDAO.add_item(user_name=user_data.user_name, user_password=user_data.user_password, email=user_data.email)
     raise SuccessRequest
 
 
@@ -52,7 +56,8 @@ async def delete_user(user_id: int):
 
 
 @router.patch("/{user_id}", dependencies=[Depends(get_user_by_id)])
-async def update_user(user_id: int, user_data: UserRegistrationSchema):
-    await UserDAO.update_by_id(model_id=user_id, user_name=user_data.user_name, user_password=user_data.user_password,
-                               email=user_data.email, eng_lvl=user_data.eng_lvl)
+@handle_errors
+async def update_user(user_id: int, user_data: UserUpdateSchema):
+    await UserDAO.update_by_id(model_id=user_id, user_name=user_data.user_name, email=user_data.email,
+                               eng_lvl=user_data.eng_lvl)
     raise SuccessRequest

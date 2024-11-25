@@ -39,5 +39,7 @@ class UserRegistrationSchema(BaseModel):
         return values
 
 
-
-
+class UserUpdateSchema(BaseModel):
+    user_name: str
+    email: EmailStr
+    eng_lvl: str

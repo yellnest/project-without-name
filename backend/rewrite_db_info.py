@@ -30,8 +30,8 @@ def delete_and_new_initiate_migration():
 
 async def add_initial_info():
     # conn = await asyncpg.connect(f'postgresql://admin:admin@localhost:5432/{settings.DB_NAME}') TODO Сделать ссылку через env
-    conn = await asyncpg.connect(user='admin', password='admin',
-                                 database='project', host=HOST, port=5432)
+    conn = await asyncpg.connect(user=settings.DB_USER, password=settings.DB_PASS,
+                                 database=settings.DB_NAME, host=HOST, port=5432)
     print("Connect to database")
     try:
         # Insert into artists table
