@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 
 from app.base.servieces import handle_errors
-from app.exceptions import NoSuchItem, SuccessRequest
+from app.exceptions import NoSuchItemException, SuccessRequest
 from app.src.artists.dao import ArtistDao
 from app.src.artists.schemas import ArtistSchema, CreateArtistSchema
 
@@ -20,7 +20,7 @@ async def get_all_artists() -> list[ArtistSchema]:
 async def get_artist_by_id(artist_id: int) -> ArtistSchema:
     artist = await ArtistDao.get_by_id(artist_id)
     if artist is None:
-        raise NoSuchItem
+        raise NoSuchItemException
     return artist
 
 

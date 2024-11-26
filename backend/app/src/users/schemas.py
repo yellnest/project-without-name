@@ -3,8 +3,7 @@ from typing import Any
 
 from pydantic import EmailStr, BaseModel, model_validator
 
-from app.exceptions import  PasswordsDoNotMatch
-
+from app.exceptions import PasswordsDoNotMatchException
 
 
 class UserSchema(BaseModel):
@@ -21,13 +20,16 @@ class UserSchema(BaseModel):
     updated_at: datetime
 
 
-class UserRegistrationSchema(BaseModel):
-    user_name: str
-    user_password: str
-    repeat_password: str
+class UserLoginSchema(BaseModel):
     email: EmailStr
-    # eng_lvl: str
+    user_password: str
 
+
+class UserRegistrationSchema(UserLoginSchema):
+    repeat_password: str
+    user_name: str
+
+    # eng_lvl: str
 
     @model_validator(mode='before')
     def check_passwords_match(cls, values: dict[str, Any]) -> dict[str, Any]:
@@ -35,7 +37,7 @@ class UserRegistrationSchema(BaseModel):
         password = values.get('user_password')
         password_repeat = values.get('repeat_password')
         if password != password_repeat:
-            raise PasswordsDoNotMatch
+            raise PasswordsDoNotMatchException
         return values
 
 

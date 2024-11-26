@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 
 from app.base.servieces import handle_errors
-from app.exceptions import NoSuchItem, SuccessRequest
+from app.exceptions import NoSuchItemException, SuccessRequest
 from app.src.genre.dao import GenreDao
 from app.src.genre.schemas import GenreSchema, CreateGenreSchema
 
@@ -21,7 +21,7 @@ async def all_genres() -> list[GenreSchema]:
 async def get_genre_by_id(genre_id: int) -> GenreSchema:
     genre = await GenreDao.get_by_id(genre_id)
     if genre is None:
-        raise NoSuchItem
+        raise NoSuchItemException
     return genre
 
 

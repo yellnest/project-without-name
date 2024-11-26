@@ -1,3 +1,5 @@
+from symtable import Class
+
 from fastapi import HTTPException, status
 
 
@@ -14,30 +16,56 @@ class SuccessRequest(BaseProjectException):
     detail = "Success request"
 
 
-class NoSuchItem(BaseProjectException):
+class NoSuchItemException(BaseProjectException):
     status_code = status.HTTP_400_BAD_REQUEST
     detail = "Item not found"
 
 
-class ItemAlreadyExists(BaseProjectException):
+class ItemAlreadyExistsException(BaseProjectException):
     status_code = status.HTTP_409_CONFLICT
     detail = "Item already exists"
 
 
-class IncorrectForeignKey(BaseProjectException):
+class IncorrectForeignKeyException(BaseProjectException):
     status_code = status.HTTP_409_CONFLICT
     detail = "Incorrect Foreign Key"
 
 
-class InvalidEnum(BaseProjectException):
+class InvalidEnumException(BaseProjectException):
     status_code = status.HTTP_400_BAD_REQUEST
     detail = "Invalid enum choices"
 
 
-class UserAlreadyExists(BaseProjectException):
+class UserAlreadyExistsException(BaseProjectException):
     status_code = status.HTTP_409_CONFLICT
     detail = "User with email already exists"
 
-class PasswordsDoNotMatch(BaseProjectException):
+
+class PasswordsDoNotMatchException(BaseProjectException):
     status_code = status.HTTP_400_BAD_REQUEST
     detail = "Passwords do not match"
+
+
+class IncorrectEmailException(BaseProjectException):
+    status_code = status.HTTP_401_UNAUTHORIZED
+    detail = "Неверная почта"
+
+
+class IncorrectPasswordException(BaseProjectException):
+    status_code = status.HTTP_401_UNAUTHORIZED
+    detail = "Неверный пароль"
+
+
+class TokenIsNotExistException(BaseProjectException):
+    status_code = status.HTTP_401_UNAUTHORIZED
+    detail = "Токен отсутствует"
+
+
+class WrongTokenFormatException(BaseProjectException):
+    status_code = status.HTTP_401_UNAUTHORIZED
+    detail = "Неверный формат токена"
+
+
+class TokenExpiredException(BaseProjectException):
+    status_code = status.HTTP_401_UNAUTHORIZED
+    detail = "Время жизни токена кончилось"

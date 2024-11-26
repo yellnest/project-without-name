@@ -20,7 +20,7 @@ class Users(Base, CreatedAndUpdatedFields):
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True)
     user_name = Column(String(50), nullable=False)
-    user_password = Column(String(50), nullable=False)
+    user_password = Column(String(250), nullable=False)
     email = Column(String, nullable=False, unique=True)
     eng_lvl = Column(Enum(EnglishLevel), nullable=False, default=EnglishLevel.IDK)
     avatar = Column(String)

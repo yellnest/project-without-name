@@ -4,7 +4,7 @@ from datetime import datetime, UTC
 
 from asyncpg import UniqueViolationError, ForeignKeyViolationError, InvalidTextRepresentationError
 from sqlalchemy.exc import IntegrityError, DBAPIError
-from app.exceptions import SuccessRequest, ItemAlreadyExists, IncorrectForeignKey, InvalidEnum
+from app.exceptions import SuccessRequest, ItemAlreadyExistsException, IncorrectForeignKeyException, InvalidEnumException
 
 
 def naive_utcnow():
@@ -35,17 +35,17 @@ def handle_errors(func):
             current_error = e.orig.__dict__.get('sqlstate')
             if current_error == UniqueViolationError.sqlstate:
                 """Если указано unique, и происходит попытка добавить существующие, то вызывается эта ошибка"""
-                raise ItemAlreadyExists
+                raise ItemAlreadyExistsException
             elif current_error == ForeignKeyViolationError.sqlstate:
                 """Если указан несуществующий foreignKey"""
-                raise IncorrectForeignKey
+                raise IncorrectForeignKeyException
             else:
                 raise e
         except DBAPIError as e:
             current_error = e.orig.__dict__.get('sqlstate')
             if current_error == InvalidTextRepresentationError.sqlstate:
                 """Если указано несуществующие поле в enum"""
-                raise InvalidEnum
+                raise InvalidEnumException
             else:
                 raise e
 

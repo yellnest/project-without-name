@@ -1,9 +1,11 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Response
 
 from app.base.servieces import handle_errors
-from app.exceptions import SuccessRequest, NoSuchItem
+from app.exceptions import SuccessRequest, NoSuchItemException
+from app.src.users.auth import get_password_hash, authenticate_user, create_access_token
 from app.src.users.dao import UserDAO
-from app.src.users.schemas import UserSchema, UserRegistrationSchema, UserUpdateSchema
+from app.src.users.dependencies import get_current_user
+from app.src.users.schemas import UserSchema, UserRegistrationSchema, UserUpdateSchema, UserLoginSchema
 
 router = APIRouter(
     prefix="/auth",
@@ -14,9 +16,9 @@ router = APIRouter(
 @router.post("/register")
 @handle_errors
 async def register_user(user: UserRegistrationSchema):
-    await UserDAO.add_item(user_name=user.user_name, user_password=user.user_password, email=user.email)
+    hashed_password = get_password_hash(user.user_password)
+    await UserDAO.add_item(user_name=user.user_name, user_password=hashed_password, email=user.email)
     raise SuccessRequest
-
 
     # await email_already_exist(user.email)
     # print(user.email)
@@ -28,6 +30,24 @@ async def register_user(user: UserRegistrationSchema):
     #                        eng_lvl=user.eng_lvl,)
 
 
+@router.post("/login")
+async def login_user(response: Response, user_data: UserLoginSchema):
+    user = await authenticate_user(user_data.email, user_data.user_password)
+    access_token = create_access_token({"sub": str(user.id)})
+    response.set_cookie("access_token", access_token, httponly=True)
+    return access_token
+
+
+@router.post('/logout')
+async def logout_user(response: Response):
+    response.delete_cookie('access_token')
+    raise SuccessRequest
+
+
+@router.get('/me')
+async def read_users_me(current_user: UserSchema = Depends(get_current_user)) -> UserSchema:
+    return current_user
+
 
 @router.get("/all")
 async def get_all_users() -> list[UserSchema]:
@@ -38,7 +58,7 @@ async def get_all_users() -> list[UserSchema]:
 async def get_user_by_id(user_id: int) -> UserSchema:
     user = await UserDAO.get_by_id(user_id)
     if user is None:
-        raise NoSuchItem
+        raise NoSuchItemException
     return user
 
 

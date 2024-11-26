@@ -11,6 +11,7 @@ else:
     HOST = 'localhost'
 
 def delete_and_new_initiate_migration():
+    """Считает кол-во файлов с миграциями, и все их откатывает"""
     mig_files = [file for file in os.listdir(f'{os.getcwd()}/app/migrations/versions') if file.endswith('.py')]
     os.system(f'alembic downgrade -{len(mig_files)}')
     print(f'all migrations downgraded')
