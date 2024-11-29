@@ -1,5 +1,7 @@
 from pydantic import BaseModel, Field
 
+from app.src.songs.models import EnglishAccentChoice
+
 
 class SongSchema(BaseModel):
     id: int
@@ -12,7 +14,7 @@ class SongSchema(BaseModel):
     total_diff: float
     description: str
     published: bool
-    accent: str
+    accent: EnglishAccentChoice
     genre_name: str
     artists: list[str | None]
 
@@ -25,5 +27,5 @@ class CreateSongSchema(BaseModel):
     words_slurring: float = Field(ge=1, le=10)
     description: str
     published: bool
-    accent: str
+    accent: EnglishAccentChoice
     genre_id: int

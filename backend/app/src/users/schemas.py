@@ -4,6 +4,7 @@ from typing import Any
 from pydantic import EmailStr, BaseModel, model_validator
 
 from app.exceptions import PasswordsDoNotMatchException
+from app.src.users.models import EnglishLevel
 
 
 class UserSchema(BaseModel):
@@ -12,7 +13,7 @@ class UserSchema(BaseModel):
     user_password: str
     email: EmailStr
     user_password: str
-    eng_lvl: str
+    eng_lvl: EnglishLevel
     avatar: str | None
     is_admin: bool
     is_superuser: bool
@@ -31,17 +32,17 @@ class UserRegistrationSchema(UserLoginSchema):
 
     # eng_lvl: str
 
-    @model_validator(mode='before')
-    def check_passwords_match(cls, values: dict[str, Any]) -> dict[str, Any]:
-        # Comparing two passwords before returning
-        password = values.get('user_password')
-        password_repeat = values.get('repeat_password')
-        if password != password_repeat:
-            raise PasswordsDoNotMatchException
-        return values
+    # @model_validator(mode='before')
+    # def check_passwords_match(cls, values: dict[str, Any]) -> dict[str, Any]:
+    #     # Comparing two passwords before returning
+    #     password = values.get('user_password')
+    #     password_repeat = values.get('repeat_password')
+    #     if password != password_repeat:
+    #         raise PasswordsDoNotMatchException
+    #     return values
 
 
 class UserUpdateSchema(BaseModel):
     user_name: str
     email: EmailStr
-    eng_lvl: str
+    eng_lvl: EnglishLevel

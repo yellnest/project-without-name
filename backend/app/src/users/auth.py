@@ -5,28 +5,31 @@ from passlib.context import CryptContext
 from pydantic import EmailStr
 
 from app.config import settings
-from app.exceptions import IncorrectEmailException, IncorrectPasswordException
+from app.exceptions import IncorrectEmailException, IncorrectPasswordException, PasswordsDoNotMatchException
 from app.src.users.dao import UserDAO
 
 pwd_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
 
 
-def get_password_hash(password: str) -> str:
+def get_password_hash_and_compare(password: str, sec_password: str) -> str:
+    if password != sec_password:
+        raise PasswordsDoNotMatchException
     return pwd_context.hash(password)
 
 
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
-
+    # return plain_password
 
 def create_access_token(data: dict) -> str:
     to_encode = data.copy()
-    expire = datetime.utcnow() + timedelta(days=5)
+    expire = datetime.utcnow() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     to_encode.update({'exp': expire})
     encoded_jwt = jwt.encode(
         to_encode, settings.SECRET_KEY, settings.ALGORITHM
     )
     return encoded_jwt
+
 
 async def authenticate_user(email: EmailStr, password: str):
     user = await UserDAO.get_one_or_none(email=email)
@@ -35,4 +38,3 @@ async def authenticate_user(email: EmailStr, password: str):
     if not verify_password(password, user.user_password):
         raise IncorrectPasswordException
     return user
-

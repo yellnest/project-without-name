@@ -69,3 +69,18 @@ class WrongTokenFormatException(BaseProjectException):
 class TokenExpiredException(BaseProjectException):
     status_code = status.HTTP_401_UNAUTHORIZED
     detail = "Время жизни токена кончилось"
+
+
+class InvalidTokenException(BaseProjectException):
+    status_code = status.HTTP_401_UNAUTHORIZED
+    detail = "Невалидный токен"
+
+
+class InvalidTokenInformationException(BaseProjectException):
+    status_code = status.HTTP_401_UNAUTHORIZED
+    detail = "Token does not contain user id or sub"
+
+
+class NoPermissionException(BaseProjectException):
+    status_code = status.HTTP_403_FORBIDDEN
+    detail = "У вас нет доступа"
