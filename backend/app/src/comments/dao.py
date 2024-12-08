@@ -7,6 +7,8 @@ from app.src.relationship_tables.relation_models import SongComments
 
 class CommentDao(BaseDao):
 
+    model = SongComments
+
     @classmethod
     async def get_comments_by_song_id(cls, song_id: int):
         async with async_session_marker() as session:
@@ -21,7 +23,7 @@ class CommentDao(BaseDao):
             return result.mappings().all()
 
 
-    @classmethod
-    async def create_comment_by_song_id(cls, song_id: int, comment: str):
-        async with async_session_marker() as session:
-            pass
+    # @classmethod
+    # async def create_comment_by_song_id(cls, song_id: int, comment: str):
+    #     async with async_session_marker() as session:
+    #         pass

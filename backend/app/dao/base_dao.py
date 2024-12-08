@@ -33,7 +33,7 @@ class BaseDao:
     @classmethod
     async def add_item(cls, **data):
         async with async_session_marker() as session:
-            query = insert(cls.model).values(**data).returning(cls.model.id)
+            query = insert(cls.model).values(**data)
             await session.execute(query)
             await session.commit()
 
