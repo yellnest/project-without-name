@@ -4,7 +4,7 @@ from app.base.servieces import handle_errors
 from app.exceptions import SuccessRequest, NoSuchItemException
 from app.src.users.auth import get_password_hash_and_compare, authenticate_user, create_access_token
 from app.src.users.dao import UserDAO
-from app.src.users.dependencies import get_current_user, permission_dependency
+from app.src.users.dependencies import get_current_user, permission_dependency, change_password_dependency
 from app.src.users.schemas import UserSchema, UserRegistrationSchema, UserUpdateSchema, UserLoginSchema
 
 router = APIRouter(
@@ -78,6 +78,11 @@ async def delete_user(user_id: int):
 @router.patch("/{user_id}")
 @handle_errors
 async def update_user(user_data: UserUpdateSchema, user_id: UserUpdateSchema = Depends(get_current_user)):
-    await UserDAO.update_by_id(model_id=user_id.id, user_name=user_data.user_name, email=user_data.email,
-                               eng_lvl=user_data.eng_lvl)
-    raise SuccessRequest
+    user_update_data = user_data.model_dump(exclude_unset=True)
+    await UserDAO.update_by_id(model_id=user_id.id, **user_update_data)
+
+
+@router.put("/{user_id}/change-password")
+@handle_errors
+async def change_password(user_id: UserLoginSchema = Depends(change_password_dependency)):
+    await UserDAO.update_by_id(model_id=user_id.id, user_password=user_id.user_password)

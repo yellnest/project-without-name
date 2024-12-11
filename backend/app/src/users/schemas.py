@@ -1,22 +1,23 @@
 from datetime import datetime
-from typing import Any
+from typing import Optional
 
-from pydantic import EmailStr, BaseModel, model_validator
+from pydantic import EmailStr, BaseModel
 
-from app.exceptions import PasswordsDoNotMatchException
 from app.src.users.models import EnglishLevel
 
 
-class UserSchema(BaseModel):
+class BaseUserSchema(BaseModel):
+    user_name: Optional[str]
+    email: Optional[EmailStr]
+    eng_lvl: Optional[EnglishLevel]
+    avatar: Optional[str]
+
+
+class UserSchema(BaseUserSchema):
     id: int
-    user_name: str
+    is_admin: Optional[bool] = False
+    is_superuser: Optional[bool] = False
     user_password: str
-    email: EmailStr
-    user_password: str
-    eng_lvl: EnglishLevel
-    avatar: str | None
-    is_admin: bool
-    is_superuser: bool
     created_at: datetime
     updated_at: datetime
 
@@ -26,23 +27,24 @@ class UserLoginSchema(BaseModel):
     user_password: str
 
 
-class UserRegistrationSchema(UserLoginSchema):
+class UserRegistrationSchema(UserLoginSchema, BaseUserSchema):
     repeat_password: str
-    user_name: str
-
-    # eng_lvl: str
-
-    # @model_validator(mode='before')
-    # def check_passwords_match(cls, values: dict[str, Any]) -> dict[str, Any]:
-    #     # Comparing two passwords before returning
-    #     password = values.get('user_password')
-    #     password_repeat = values.get('repeat_password')
-    #     if password != password_repeat:
-    #         raise PasswordsDoNotMatchException
-    #     return values
 
 
-class UserUpdateSchema(BaseModel):
-    user_name: str
-    email: EmailStr
-    eng_lvl: EnglishLevel
+class UserUpdateSchema(BaseUserSchema):
+    pass
+
+class UserUpdatePasswordSchema(BaseModel):
+    current_password: str
+    user_password: str
+    repeat_password: str
+
+
+# class UserUpdateSchema(BaseModel):
+#     # __annotations__ = {k: Optional[v] for k, v in UserCreate.__annotations__.items()}
+#
+#     user_name: Optional[str] = None
+#     email: Optional[EmailStr] = None
+#     eng_lvl: Optional[EnglishLevel] = None
+#     user_password: Optional[str] = None
+#     repeat_password: Optional[str] = None

@@ -2,13 +2,14 @@ from jose import jwt, ExpiredSignatureError, JWTError
 
 from app.config import settings
 from app.exceptions import UserAlreadyExistsException, TokenIsNotExistException, \
-    TokenExpiredException, InvalidTokenException, InvalidTokenInformationException
+    TokenExpiredException, InvalidTokenException, InvalidTokenInformationException, IncorrectPasswordException
+from app.src.users.auth import verify_password, get_password_hash_and_compare
 from app.src.users.dao import UserDAO
 
 from fastapi import Request, Depends
 
 from app.src.users.permissions import check_permissions
-from app.src.users.schemas import UserSchema
+from app.src.users.schemas import UserSchema, UserUpdatePasswordSchema
 
 
 async def email_already_exist(email: str):
@@ -45,3 +46,10 @@ def permission_dependency(current_user: UserSchema = Depends(get_current_user)):
     check_permissions(current_user)
     return current_user
 
+
+def change_password_dependency(user: UserUpdatePasswordSchema, current_user: UserSchema = Depends(get_current_user)):
+    verified = verify_password(user.current_password, current_user.user_password)
+    if not verified:
+        raise IncorrectPasswordException
+    current_user.user_password = get_password_hash_and_compare(user.user_password, user.repeat_password)
+    return current_user
