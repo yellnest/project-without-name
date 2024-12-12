@@ -8,7 +8,6 @@ from app.src.users.dao import UserDAO
 
 from fastapi import Request, Depends
 
-from app.src.users.permissions import check_permissions
 from app.src.users.schemas import UserSchema, UserUpdatePasswordSchema
 
 
@@ -40,11 +39,6 @@ async def get_current_user(token: str = Depends(get_token)):
         raise InvalidTokenException
     user = await UserDAO.get_by_id(int(user_id))
     return user
-
-
-def permission_dependency(current_user: UserSchema = Depends(get_current_user)):
-    check_permissions(current_user)
-    return current_user
 
 
 def change_password_dependency(user: UserUpdatePasswordSchema, current_user: UserSchema = Depends(get_current_user)):
