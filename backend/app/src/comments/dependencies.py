@@ -14,7 +14,7 @@ async def get_comment_by_id(comment_id: int):
     return comm
 
 
-def delete_dependency(comment: CommentSchema = Depends(get_comment_by_id), current_user: UserSchema = Depends(get_current_user)):
+def admin_or_owner(comment: CommentSchema = Depends(get_comment_by_id), current_user: UserSchema = Depends(get_current_user)):
     if comment.user_id == current_user.id:
         return current_user
     check_admin_permission(current_user)

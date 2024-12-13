@@ -5,6 +5,7 @@ from app.exceptions import SuccessRequest
 from app.src.songs.dao import SongsDao
 from app.src.songs.dependencies import valid_song_id
 from app.src.songs.schemas import SongSchema, CreateSongSchema
+from app.src.users.dependencies import get_current_user
 
 router = APIRouter(
     prefix="/songs",
@@ -49,13 +50,31 @@ async def update_song_by_id(song_id: int, user_data: CreateSongSchema):
     return f'{SuccessRequest} + '
 
 
-@router.post("/artists/{song_id}")
+@router.post("/artists")
 @handle_errors
 async def add_artist_to_song(song_id: int, artist_id: int):
     await SongsDao.add_artist_of_song_by_id(song_id=song_id, artist_id=artist_id)
 
 
 @router.delete("/artists/{song_id}", dependencies=[Depends(valid_song_id)])
+@handle_errors
 async def delete_artist_from_song(song_id: int, artist_id: int):
     await SongsDao.delete_artist_of_song_by_id(song_id=song_id, artist_id=artist_id)
-    return SuccessRequest
+
+
+@router.get("/like/{user_id}")
+async def get_user_likes(user_id: SongSchema = Depends(get_current_user)):
+    return await SongsDao.get_user_likes(user_id=user_id.id)
+
+@router.post('/like', dependencies=[Depends(valid_song_id)])
+@handle_errors
+async def add_user_like(song_id: int, user_id: SongSchema = Depends(get_current_user)):
+    await SongsDao.add_like_to_song(song_id=song_id, user_id=user_id.id)
+
+
+@router.delete("/like/{song_id}", dependencies=[Depends(valid_song_id)])
+@handle_errors
+async def delete_artist_from_song(song_id: int, user_id: SongSchema = Depends(get_current_user)):
+    await SongsDao.delete_like(song_id=song_id, user_id=user_id.id)
+
+
