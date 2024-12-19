@@ -36,7 +36,6 @@ class SongsDao(BaseDao):
             .join(Genre, Songs.genre_id == Genre.id)
             .join(SongArtist, SongArtist.c.song_id == Songs.id, isouter=True)
             .join(Artists, SongArtist.c.artist_id == Artists.id, isouter=True)
-            .join(SongLikes, SongLikes.c.song_id == Songs.id, isouter=True)
             .group_by(
                 Songs.id,
                 Genre.title
@@ -45,7 +44,10 @@ class SongsDao(BaseDao):
         if song_id:
             query = query.where(Songs.id == song_id)
         elif user_id:
-            query = query.where(SongLikes.c.user_id == user_id)
+            query = (
+                query.join(SongLikes, SongLikes.c.song_id == Songs.id, isouter=True)
+                .where(SongLikes.c.user_id == user_id)
+            )
         return query
 
     @classmethod
@@ -62,23 +64,13 @@ class SongsDao(BaseDao):
             song_by_result = await session.execute(query)
             return song_by_result.mappings().first()
 
-    """Добавление, удаление и просмотр лайков"""
+    """Удаление и просмотр лайков"""
     @classmethod
     async def get_user_likes(cls, user_id):
         async with async_session_marker() as session:
             query = cls._construct_song_query(user_id=user_id)
             result = await session.execute(query)
             return result.mappings().all()
-
-    @classmethod
-    async def add_like_to_song(cls, user_id, song_id):
-        async with async_session_marker() as session:
-            add_like = (
-                insert(SongLikes)
-                .values(user_id=user_id, song_id=song_id)
-            )
-            await session.execute(add_like)
-            await session.commit()
 
     @classmethod
     async def delete_like(cls, user_id, song_id):
@@ -94,17 +86,7 @@ class SongsDao(BaseDao):
             await session.execute(delete_artist)
             await session.commit()
 
-    """Добавление и удаление исполнителей к песне"""
-    @classmethod
-    async def add_artist_of_song_by_id(cls, song_id, artist_id):
-        async with (async_session_marker() as session):
-            add_artist = (
-                insert(SongArtist)
-                .values(song_id=song_id, artist_id=artist_id)
-            )
-            await session.execute(add_artist)
-            await session.commit()
-
+    """Удаление исполнителей у песни"""
     @classmethod
     async def delete_artist_of_song_by_id(cls, song_id, artist_id):
         async with (async_session_marker() as session):
@@ -118,3 +100,11 @@ class SongsDao(BaseDao):
             )
             await session.execute(delete_artist)
             await session.commit()
+
+
+class SongLikesDao(BaseDao):
+    model = SongLikes
+
+
+class SongArtistDao(BaseDao):
+    model = SongArtist

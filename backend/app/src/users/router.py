@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, Response
-
+from fastapi_cache.decorator import cache
 from app.base.servieces import handle_errors
 from app.exceptions import SuccessRequest, NoSuchItemException
 from app.src.users.auth import get_password_hash_and_compare, authenticate_user, create_access_token
@@ -50,6 +50,7 @@ async def read_users_me(current_user: UserSchema = Depends(get_current_user)) ->
 
 
 @router.get("/all", dependencies=[Depends(check_admin_permission)])
+@cache(expire=20)
 async def get_all_users() -> list[UserSchema]:
     return await UserDAO.get_all()
 

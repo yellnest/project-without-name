@@ -19,10 +19,9 @@ COPY .. .
 #    && alembic upgrade head \
 #    && uvicorn app.main:app --host 0.0.0.0 --port 8000
 
-#CMD python rewrite_db_info.py \
-#    && uvicorn app.main:app --host 0.0.0.0 --port 8000
+CMD python rewrite_db_info.py \
+    && uvicorn app.main:app --host 0.0.0.0 --port 8000
 
-EXPOSE 8000
-ENTRYPOINT ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+#ENTRYPOINT ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
 #["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
 #ENTRYPOINT ["bash"]

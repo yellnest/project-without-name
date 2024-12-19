@@ -5,10 +5,6 @@ import time
 
 from app.config import settings
 
-if settings.DB_MODE == 'docker':
-    HOST = 'db'
-else:
-    HOST = 'localhost'
 
 def delete_and_new_initiate_migration():
     """Считает кол-во файлов с миграциями, и все их откатывает"""
@@ -32,7 +28,7 @@ def delete_and_new_initiate_migration():
 async def add_initial_info():
     # conn = await asyncpg.connect(f'postgresql://admin:admin@localhost:5432/{settings.DB_NAME}') TODO Сделать ссылку через env
     conn = await asyncpg.connect(user=settings.DB_USER, password=settings.DB_PASS,
-                                 database=settings.DB_NAME, host=HOST, port=5432)
+                                 database=settings.DB_NAME, host=settings.DB_HOST, port=5432)
     print("Connect to database")
     try:
         # Insert into artists table

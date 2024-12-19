@@ -1,8 +1,9 @@
 from fastapi import APIRouter, Depends
+from fastapi_cache.decorator import cache
 
 from app.base.servieces import handle_errors
 from app.exceptions import SuccessRequest
-from app.src.songs.dao import SongsDao
+from app.src.songs.dao import SongsDao, SongLikesDao, SongArtistDao
 from app.src.songs.dependencies import valid_song_id
 from app.src.songs.schemas import SongSchema, CreateSongSchema
 from app.src.users.dependencies import get_current_user
@@ -14,9 +15,9 @@ router = APIRouter(
 
 
 @router.get("/all")
+@cache(expire=20)
 async def get_all_songs() -> list[SongSchema]:
     return await SongsDao.show_all_songs()
-    # return await SongsDao.get_all()
 
 
 @router.get("/{song_id}", dependencies=[Depends(valid_song_id)])
@@ -53,7 +54,7 @@ async def update_song_by_id(song_id: int, user_data: CreateSongSchema):
 @router.post("/artists")
 @handle_errors
 async def add_artist_to_song(song_id: int, artist_id: int):
-    await SongsDao.add_artist_of_song_by_id(song_id=song_id, artist_id=artist_id)
+    await SongArtistDao.add_item(song_id=song_id, artist_id=artist_id)
 
 
 @router.delete("/artists/{song_id}", dependencies=[Depends(valid_song_id)])
@@ -69,7 +70,7 @@ async def get_user_likes(user_id: SongSchema = Depends(get_current_user)):
 @router.post('/like', dependencies=[Depends(valid_song_id)])
 @handle_errors
 async def add_user_like(song_id: int, user_id: SongSchema = Depends(get_current_user)):
-    await SongsDao.add_like_to_song(song_id=song_id, user_id=user_id.id)
+    await SongLikesDao.add_item(song_id=song_id, user_id=user_id.id)
 
 
 @router.delete("/like/{song_id}", dependencies=[Depends(valid_song_id)])

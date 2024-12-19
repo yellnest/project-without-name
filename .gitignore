@@ -12,3 +12,4 @@ backend/app/migrations/versions/**
 
 test.py
 .env
+.env-prod
