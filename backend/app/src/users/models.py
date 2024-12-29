@@ -22,6 +22,7 @@ class Users(Base, CreatedAndUpdatedFields):
     user_name = Column(String(50), nullable=False)
     user_password = Column(String(250), nullable=False)
     email = Column(String, nullable=False, unique=True)
+    email_confirmed = Column(Boolean, default=False, nullable=False)
     eng_lvl = Column(Enum(EnglishLevel), nullable=False, default=EnglishLevel.IDK)
     avatar = Column(String)
     is_admin = Column(Boolean, default=False, nullable=False)

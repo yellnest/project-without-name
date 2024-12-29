@@ -46,6 +46,16 @@ class PasswordsDoNotMatchException(BaseProjectException):
     detail = "Passwords do not match"
 
 
+class VerificationCodesDoNotMatchException(BaseProjectException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    detail = "Codes do not match"
+
+
+class VerificationCodeExpiredException(BaseProjectException):
+    status_code = status.HTTP_401_UNAUTHORIZED
+    detail = "Время жизни проверочного кода кончилось"
+
+
 class IncorrectEmailException(BaseProjectException):
     status_code = status.HTTP_401_UNAUTHORIZED
     detail = "Неверная почта"

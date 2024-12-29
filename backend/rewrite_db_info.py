@@ -88,13 +88,13 @@ async def add_initial_info():
         # Insert into users table
         await conn.executemany(
             """
-            INSERT INTO users (user_name, user_password, email, eng_lvl, is_admin, is_superuser)
-            VALUES ($1, $2, $3, $4, $5, $6)
+            INSERT INTO users (user_name, user_password, email, email_confirmed, eng_lvl, is_admin, is_superuser)
+            VALUES ($1, $2, $3, $4, $5, $6, $7)
             """,
             [
-                ('ivan', '123', 'test@gmail.com', 'B1', True, True),
-                ('user', 'test', 'user@user.ru', 'A1', False, False),
-                ('admin', 'qerty123', 'admin@admin.com', 'IDK', True, False)
+                ('ivan', '123', 'test@gmail.com', True, 'B1', True, True),
+                ('user', 'test', 'user@user.ru', False, 'A1', False, False),
+                ('admin', 'qerty123', 'admin@admin.com', False, 'IDK', True, False)
             ]
         )
         print('users successfully inserted')

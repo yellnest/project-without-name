@@ -1,12 +1,17 @@
 from fastapi import APIRouter, Depends, Response
 from fastapi_cache.decorator import cache
-from app.base.servieces import handle_errors
+from fastapi_mail import MessageSchema, FastMail
+from starlette.responses import JSONResponse
+
+from app.base.servieces import handle_errors, get_email_confirmation_code, compare_conf_codes
+from app.config import settings
 from app.exceptions import SuccessRequest, NoSuchItemException
 from app.src.users.auth import get_password_hash_and_compare, authenticate_user, create_access_token
 from app.src.users.dao import UserDAO
 from app.src.users.dependencies import get_current_user, change_password_dependency
 from app.src.users.permissions import check_admin_permission
-from app.src.users.schemas import UserSchema, UserRegistrationSchema, UserUpdateSchema, UserLoginSchema
+from app.src.users.schemas import UserSchema, UserRegistrationSchema, UserUpdateSchema, UserLoginSchema, SendEmailSchema
+from app.tasks.tasks import send_email_task
 
 router = APIRouter(
     prefix="/user",
@@ -20,14 +25,24 @@ async def register_user(user: UserRegistrationSchema):
     hashed_password = get_password_hash_and_compare(user.user_password, user.repeat_password)
     await UserDAO.add_item(user_name=user.user_name, user_password=hashed_password, email=user.email)
 
-    # await email_already_exist(user.email)
-    # print(user.email)
-    # if user.user_password == user.repeat_password:
-    #     print(user.user_password)
-    # else:
-    #     print('fadsfads')
-    # await UserDAO.add_item(user_name=user.username, email=user.email, user_password=user.user_password,
-    #                        eng_lvl=user.eng_lvl,)
+
+@router.post("/send_mail_confirmation")
+@handle_errors
+async def send_mail(email: SendEmailSchema = Depends(get_current_user)):
+    recipient_email = email.email
+    send_email_task.delay(recipient_email)
+
+
+@router.post("/confirm_email")
+@handle_errors
+async def confirm_email(conf_code: int, user: SendEmailSchema = Depends(get_current_user)):
+    code = get_email_confirmation_code(user.email)
+    verify_codes = compare_conf_codes(conf_code, code)
+    if verify_codes:
+        return await UserDAO.update_by_id(model_id=user.id, email_confirmed=True)
+
+
+
 
 
 @router.post("/login")
@@ -39,9 +54,9 @@ async def login_user(response: Response, user_data: UserLoginSchema):
 
 
 @router.post('/logout')
+@handle_errors
 async def logout_user(response: Response):
     response.delete_cookie('access_token')
-    return {"message": "Logged out"}
 
 
 @router.get('/me')

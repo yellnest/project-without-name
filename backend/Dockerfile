@@ -9,7 +9,7 @@ ENV PYTHONBUFFERED 1
 
 # install dependencies
 COPY app/requirements.txt ./
-RUN pip install --upgrade pip && pip install -r requirements.txt
+RUN pip install --upgrade pip && pip install -r requirements.txt && pip install gunicorn
 
 # add app
 COPY .. .
@@ -20,8 +20,8 @@ COPY .. .
 #    && uvicorn app.main:app --host 0.0.0.0 --port 8000
 
 CMD python rewrite_db_info.py \
-    && uvicorn app.main:app --host 0.0.0.0 --port 8000
+    && gunicorn app.main:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind=0.0.0.0:8000
 
 #ENTRYPOINT ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
-#["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+#["gunicorn", "app.main:app", "--workers", "4", "--worker-class", "uvicorn.workers.UvicornWorker", "--bind=0.0.0.0:8000"]
 #ENTRYPOINT ["bash"]

@@ -6,6 +6,13 @@ from pydantic import EmailStr, BaseModel
 from app.src.users.models import EnglishLevel
 
 
+class SendEmailSchema(BaseModel):
+    id: int
+    code: int
+    email: EmailStr
+    email_confirmed: bool
+
+
 class BaseUserSchema(BaseModel):
     user_name: Optional[str]
     email: Optional[EmailStr]
@@ -20,6 +27,7 @@ class UserSchema(BaseUserSchema):
     user_password: str
     created_at: datetime
     updated_at: datetime
+    email_confirmed: bool
 
 
 class UserLoginSchema(BaseModel):

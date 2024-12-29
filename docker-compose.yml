@@ -52,6 +52,19 @@ services:
       redis:
         condition: service_healthy
 
+  celery:
+    build:
+      context: ./backend
+    command: ["docker/celery.sh"]
+    env_file:
+      - backend/.env-prod
+    networks:
+      - backend-network
+    depends_on:
+      redis:
+        condition: service_healthy
+
+
 volumes:
   postgres_data:
 
