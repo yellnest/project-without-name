@@ -3,12 +3,12 @@ from fastapi_cache.decorator import cache
 from fastapi_mail import MessageSchema, FastMail
 from starlette.responses import JSONResponse
 
-from app.base.servieces import handle_errors, get_email_confirmation_code, compare_conf_codes
-from app.config import settings
+from app.base.servieces import handle_errors
 from app.exceptions import SuccessRequest, NoSuchItemException
 from app.src.users.auth import get_password_hash_and_compare, authenticate_user, create_access_token
 from app.src.users.dao import UserDAO
 from app.src.users.dependencies import get_current_user, change_password_dependency
+from app.src.users.email_confimation import get_email_confirmation_code, compare_conf_codes
 from app.src.users.permissions import check_admin_permission
 from app.src.users.schemas import UserSchema, UserRegistrationSchema, UserUpdateSchema, UserLoginSchema, SendEmailSchema
 from app.tasks.tasks import send_email_task
@@ -40,9 +40,6 @@ async def confirm_email(conf_code: int, user: SendEmailSchema = Depends(get_curr
     verify_codes = compare_conf_codes(conf_code, code)
     if verify_codes:
         return await UserDAO.update_by_id(model_id=user.id, email_confirmed=True)
-
-
-
 
 
 @router.post("/login")

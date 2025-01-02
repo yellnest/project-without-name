@@ -1,7 +1,8 @@
 import smtplib
 
-from app.base.servieces import generate_confirmation_code
+
 from app.config import settings
+from app.src.users.email_confimation import generate_confirmation_code
 from app.tasks.celery_app import celery_app
 from app.tasks.email_templates import send_email_confirmation_template
 
