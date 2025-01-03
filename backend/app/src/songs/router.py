@@ -1,11 +1,12 @@
 from fastapi import APIRouter, Depends
 from fastapi_cache.decorator import cache
-
+from fastapi_filter import FilterDepends
 from app.base.servieces import handle_errors
 from app.exceptions import SuccessRequest
 from app.src.songs.dao import SongsDao, SongLikesDao, SongArtistDao
 from app.src.songs.dependencies import valid_song_id
-from app.src.songs.schemas import SongSchema, CreateSongSchema
+from app.src.songs.filters import SongFilter
+from app.src.songs.schemas import SongSchema, CreateSongSchema, UpdateSongSchema
 from app.src.users.dependencies import get_current_user
 
 router = APIRouter(
@@ -16,8 +17,8 @@ router = APIRouter(
 
 @router.get("/all")
 @cache(expire=20)
-async def get_all_songs() -> list[SongSchema]:
-    return await SongsDao.show_all_songs()
+async def get_all_songs(song_filter: SongFilter = FilterDepends(SongFilter), user_id: SongSchema = Depends(get_current_user)) -> list[SongSchema]:
+    return await SongsDao.show_all_songs(song_filter, user_id)
 
 
 @router.get("/{song_id}", dependencies=[Depends(valid_song_id)])
@@ -41,14 +42,10 @@ async def delete_song_by_id(song_id: int):
 
 
 @router.patch("/{song_id}", dependencies=[Depends(valid_song_id)])
-async def update_song_by_id(song_id: int, user_data: CreateSongSchema):
-    await SongsDao.update_by_id(model_id=song_id, title=user_data.title, slug=user_data.slug, slang=user_data.slang,
-                                ambiguity=user_data.ambiguity, flow=user_data.flow,
-                                words_slurring=user_data.words_slurring,
-                                description=user_data.description, published=user_data.published,
-                                accent=user_data.accent,
-                                genre_id=user_data.genre_id)
-    return f'{SuccessRequest} + '
+@handle_errors
+async def update_song_by_id(song_id: int, user_data: UpdateSongSchema):
+    update_data = {key: value for key, value in user_data.model_dump(exclude_unset=True).items()}
+    await SongsDao.update_by_id(song_id, **update_data)
 
 
 @router.post("/artists")
@@ -67,6 +64,7 @@ async def delete_artist_from_song(song_id: int, artist_id: int):
 async def get_user_likes(user_id: SongSchema = Depends(get_current_user)):
     return await SongsDao.get_user_likes(user_id=user_id.id)
 
+
 @router.post('/like', dependencies=[Depends(valid_song_id)])
 @handle_errors
 async def add_user_like(song_id: int, user_id: SongSchema = Depends(get_current_user)):
@@ -77,5 +75,3 @@ async def add_user_like(song_id: int, user_id: SongSchema = Depends(get_current_
 @handle_errors
 async def delete_artist_from_song(song_id: int, user_id: SongSchema = Depends(get_current_user)):
     await SongsDao.delete_like(song_id=song_id, user_id=user_id.id)
-
-

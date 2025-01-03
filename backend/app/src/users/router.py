@@ -1,7 +1,5 @@
 from fastapi import APIRouter, Depends, Response
 from fastapi_cache.decorator import cache
-from fastapi_mail import MessageSchema, FastMail
-from starlette.responses import JSONResponse
 
 from app.base.servieces import handle_errors
 from app.exceptions import SuccessRequest, NoSuchItemException

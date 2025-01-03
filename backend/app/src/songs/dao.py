@@ -1,11 +1,11 @@
 from sqlalchemy import select, func, delete, and_
-from sqlalchemy.dialects.mysql import insert
 
 from app.dao.base_dao import BaseDao
 from app.database import async_session_marker
 
 from app.src.artists.models import Artists
 from app.src.genre.models import Genre
+from app.src.songs.filters import SongFilter
 from app.src.songs.models import Songs
 
 from app.src.relationship_tables.relation_models import SongArtist, SongLikes
@@ -51,9 +51,14 @@ class SongsDao(BaseDao):
         return query
 
     @classmethod
-    async def show_all_songs(cls):
+    async def show_all_songs(cls, user_filter: SongFilter, current_user):
         async with async_session_marker() as session:
             query = cls._construct_song_query()
+            if not current_user.is_admin or not current_user.is_superuser:
+                query = (
+                    query.where(Songs.published == True)
+                )
+            query = user_filter.filter(query)
             result = await session.execute(query)
             return result.mappings().all()
 

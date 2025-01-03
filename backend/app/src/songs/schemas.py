@@ -1,3 +1,4 @@
+from typing import Optional
 from pydantic import BaseModel, Field
 
 from app.src.songs.models import EnglishAccentChoice
@@ -18,6 +19,7 @@ class SongSchema(BaseModel):
     genre_name: str
     artists: list[str | None]
 
+
 class CreateSongSchema(BaseModel):
     title: str
     slug: str
@@ -29,3 +31,16 @@ class CreateSongSchema(BaseModel):
     published: bool
     accent: EnglishAccentChoice
     genre_id: int
+
+
+class UpdateSongSchema(BaseModel):
+    title: Optional[str] = None
+    slug: Optional[str] = None
+    slang: Optional[str] = None
+    ambiguity: Optional[float] = None
+    flow: Optional[float] = None
+    words_slurring: Optional[float] = None
+    description: Optional[str] = None
+    published: Optional[bool] = None
+    accent: Optional[str] = None
+    genre_id: Optional[int] = None
